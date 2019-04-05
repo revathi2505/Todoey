@@ -13,7 +13,7 @@ class ToDoViewController: UITableViewController {
     //Instance Variables
     
     let cellId = "ToDoItemCell"
-    let toDoList = ["Buy Apples", "Do Laundry", "Destroy people"]
+    var toDoList = ["Buy Apples", "Do Laundry", "Destroy people"]
     
 
     override func viewDidLoad() {
@@ -46,5 +46,29 @@ class ToDoViewController: UITableViewController {
 
         tableView.deselectRow(at: indexPath, animated: true)
     }
+    
+    //MARK - Add Item
+    
+    @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
+    
+        var itemName = UITextField()
+        
+        let alert = UIAlertController(title: "Add New Todoey Item", message: "", preferredStyle: .alert)
+        
+        let addAction = UIAlertAction(title: "Add New Item", style: .default) { (action) in
+            self.toDoList.append(itemName.text!)
+            self.tableView.reloadData()
+        }
+        
+        alert.addTextField { (alertTextField) in
+            alertTextField.placeholder = "Create New Item"
+            itemName = alertTextField
+        }
+        
+        alert.addAction(addAction)
+        
+        self.present(alert, animated: true, completion: nil)
+    }
+    
 }
 
