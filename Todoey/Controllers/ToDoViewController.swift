@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 class ToDoViewController: UITableViewController {
     
@@ -14,6 +15,8 @@ class ToDoViewController: UITableViewController {
     
     let cellId = "ToDoItemCell"
     var toDoList = ["Buy Apples", "Do Laundry", "Destroy people"]
+    
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     var itemArray = [Item]()
     
@@ -50,7 +53,14 @@ class ToDoViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath){
         
+        //To delete Items from coredata
+        
+//        context.delete(itemArray[indexPath.row])
+//        self.itemArray.remove(at: indexPath.row)
+        
         itemArray[indexPath.row].done = !itemArray[indexPath.row].done
+        
+        saveData()
         
         tableView.deselectRow(at: indexPath, animated: true)
     }
@@ -64,8 +74,9 @@ class ToDoViewController: UITableViewController {
         let alert = UIAlertController(title: "Add New Todoey Item", message: "", preferredStyle: .alert)
         
         let addAction = UIAlertAction(title: "Add New Item", style: .default) { (action) in
-        let item = Item()
+        let item = Item(context: self.context)
             item.itemName = textField.text!
+            item.done = false
             
          self.itemArray.append(item)
             
@@ -85,31 +96,80 @@ class ToDoViewController: UITableViewController {
     
     //MARK: Manipulate Model Data
     
-    func saveData(){
+    func saveData() {
+        do {
+            try context.save()
+        } catch {
+            print("Context saving error, \(error)")
+        }
         
-        let encoder = PropertyListEncoder()
+        tableView.reloadData()
+        
+    }
+    
+    func loadData(with request: NSFetchRequest<Item> = Item.fetchRequest()) {
         
         do {
-           let data = try encoder.encode(itemArray)
-            try data.write(to: dataFilePath!)
+            self.itemArray = try context.fetch(request)
         } catch {
-            print("Encoder failed error, \(error)")
+            print("Error while fetching request \(error)")
         }
         
         tableView.reloadData()
     }
     
-    func loadData(){
-        if let data = try? Data.init(contentsOf: dataFilePath!) {
-            let decoder = PropertyListDecoder()
-            
-            do {
-                itemArray = try decoder.decode([Item].self, from: data)
-            } catch {
-                print("decoding failed error, \(error)")
-            }
-        }
-    }
+//    func saveData(){
+//
+//        let encoder = PropertyListEncoder()
+//
+//        do {
+//           let data = try encoder.encode(itemArray)
+//            try data.write(to: dataFilePath!)
+//        } catch {
+//            print("Encoder failed error, \(error)")
+//        }
+//
+//        tableView.reloadData()
+//    }
+//
+//    func loadData(){
+//        if let data = try? Data.init(contentsOf: dataFilePath!) {
+//            let decoder = PropertyListDecoder()
+//
+//            do {
+//                itemArray = try decoder.decode([Item].self, from: data)
+//            } catch {
+//                print("decoding failed error, \(error)")
+//            }
+//        }
+//    }
     
 }
 
+//MARK: - Search bar methods
+extension ToDoViewController: UISearchBarDelegate {
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        
+        let request: NSFetchRequest<Item> = Item.fetchRequest()
+        
+        request.predicate = NSPredicate(format: "itemName CONTAINS[cd] %@", searchBar.text!)
+        
+        request.sortDescriptors = [NSSortDescriptor(key: "itemName", ascending: true)]
+        
+        loadData(with: request)
+    }
+  
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        
+        if searchBar.text!.count == 0 {
+            loadData()
+            
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+        }
+        
+    }
+
+}
