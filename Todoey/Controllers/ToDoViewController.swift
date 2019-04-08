@@ -20,6 +20,13 @@ class ToDoViewController: UITableViewController {
     
     var itemArray = [Item]()
     
+    var selectedCategory: Category? {
+        didSet {
+            self.navigationItem.title = selectedCategory?.name
+            loadData()
+        }
+    }
+    
     let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
     
 
@@ -42,7 +49,7 @@ class ToDoViewController: UITableViewController {
         
         let item = itemArray[indexPath.row]
         
-        cell.textLabel?.text = item.itemName
+        cell.textLabel?.text = item.title
         
         cell.accessoryType = item.done == true ? .checkmark : .none
         
@@ -75,8 +82,9 @@ class ToDoViewController: UITableViewController {
         
         let addAction = UIAlertAction(title: "Add New Item", style: .default) { (action) in
         let item = Item(context: self.context)
-            item.itemName = textField.text!
+            item.title = textField.text!
             item.done = false
+            item.parentCategory = self.selectedCategory!
             
          self.itemArray.append(item)
             
@@ -107,7 +115,17 @@ class ToDoViewController: UITableViewController {
         
     }
     
-    func loadData(with request: NSFetchRequest<Item> = Item.fetchRequest()) {
+    func loadData(with request: NSFetchRequest<Item> = Item.fetchRequest(), predicate: NSPredicate? = nil) {
+        
+        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", (selectedCategory?.name!)!)
+        
+        if let additionalPredicate = predicate {
+            let compoundPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, additionalPredicate])
+            
+            request.predicate = compoundPredicate
+        } else {
+            request.predicate = categoryPredicate
+        }
         
         do {
             self.itemArray = try context.fetch(request)
@@ -118,31 +136,34 @@ class ToDoViewController: UITableViewController {
         tableView.reloadData()
     }
     
-//    func saveData(){
-//
-//        let encoder = PropertyListEncoder()
-//
-//        do {
-//           let data = try encoder.encode(itemArray)
-//            try data.write(to: dataFilePath!)
-//        } catch {
-//            print("Encoder failed error, \(error)")
-//        }
-//
-//        tableView.reloadData()
-//    }
-//
-//    func loadData(){
-//        if let data = try? Data.init(contentsOf: dataFilePath!) {
-//            let decoder = PropertyListDecoder()
-//
-//            do {
-//                itemArray = try decoder.decode([Item].self, from: data)
-//            } catch {
-//                print("decoding failed error, \(error)")
-//            }
-//        }
-//    }
+    //MARK: Codable
+    
+ /*   func saveData(){
+
+        let encoder = PropertyListEncoder()
+
+        do {
+           let data = try encoder.encode(itemArray)
+            try data.write(to: dataFilePath!)
+        } catch {
+            print("Encoder failed error, \(error)")
+        }
+
+        tableView.reloadData()
+    }
+
+    func loadData(){
+        if let data = try? Data.init(contentsOf: dataFilePath!) {
+            let decoder = PropertyListDecoder()
+
+            do {
+                itemArray = try decoder.decode([Item].self, from: data)
+            } catch {
+                print("decoding failed error, \(error)")
+            }
+        }
+    }
+ */
     
 }
 
@@ -153,11 +174,11 @@ extension ToDoViewController: UISearchBarDelegate {
         
         let request: NSFetchRequest<Item> = Item.fetchRequest()
         
-        request.predicate = NSPredicate(format: "itemName CONTAINS[cd] %@", searchBar.text!)
+        request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
         
-        request.sortDescriptors = [NSSortDescriptor(key: "itemName", ascending: true)]
+        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
         
-        loadData(with: request)
+        loadData(with: request, predicate: request.predicate)
     }
   
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -169,7 +190,6 @@ extension ToDoViewController: UISearchBarDelegate {
                 searchBar.resignFirstResponder()
             }
         }
-        
     }
 
 }

@@ -10,6 +10,53 @@
     </dependencies>
     <scenes>
         <!--Todoey-->
+        <scene sceneID="nn3-M5-DWg">
+            <objects>
+                <tableViewController id="c5K-ZH-sMd" customClass="CategoryViewController" customModule="Todoey" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="cqq-pL-9r4">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <searchBar key="tableHeaderView" contentMode="redraw" id="G3q-EY-pjM">
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                            <textInputTraits key="textInputTraits"/>
+                            <connections>
+                                <outlet property="delegate" destination="c5K-ZH-sMd" id="fLo-gE-iFj"/>
+                            </connections>
+                        </searchBar>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="CategoryCell" id="01q-q0-okS">
+                                <rect key="frame" x="0.0" y="72" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="01q-q0-okS" id="bff-Hi-qbD">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="c5K-ZH-sMd" id="ChK-xq-hux"/>
+                            <outlet property="delegate" destination="c5K-ZH-sMd" id="fJs-Pt-YoJ"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Todoey" id="QAW-tq-iKa">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="ugF-mc-zWq">
+                            <color key="tintColor" red="0.92549019610000005" green="0.92549019610000005" blue="0.92549019610000005" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                            <connections>
+                                <action selector="addButtonPressed:" destination="c5K-ZH-sMd" id="4Zg-5c-vAM"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <segue destination="izf-7K-SgJ" kind="show" identifier="goToItems" id="oev-9k-2nF"/>
+                    </connections>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Qw0-LL-uCY" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1575" y="-23"/>
+        </scene>
+        <!--Items-->
         <scene sceneID="bPm-ca-oFn">
             <objects>
                 <tableViewController id="izf-7K-SgJ" customClass="ToDoViewController" customModule="Todoey" customModuleProvider="target" sceneMemberID="viewController">
@@ -40,7 +87,7 @@
                             <outlet property="delegate" destination="izf-7K-SgJ" id="qZp-J5-d0D"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Todoey" id="Jck-Ke-4XN">
+                    <navigationItem key="navigationItem" title="Items" id="Jck-Ke-4XN">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="YPl-Y8-0NQ">
                             <color key="tintColor" red="0.92549019610000005" green="0.92549019610000005" blue="0.92549019610000005" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                             <connections>
@@ -51,7 +98,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="K6K-DZ-QUg" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1892" y="103.89805097451276"/>
+            <point key="canvasLocation" x="2250" y="-16"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="8Zy-6c-RvO">
@@ -69,12 +116,12 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="izf-7K-SgJ" kind="relationship" relationship="rootViewController" id="TND-5e-83D"/>
+                        <segue destination="c5K-ZH-sMd" kind="relationship" relationship="rootViewController" id="9gY-fi-dAk"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qfz-vn-wC0" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="952.79999999999995" y="103.89805097451276"/>
+            <point key="canvasLocation" x="833" y="-30"/>
         </scene>
     </scenes>
 </document>
